@@ -1,6 +1,7 @@
 package milkycode.reversi.game;
 
 public interface Player {
-    BoardCoordinates makeMove(Board board);
+    Move getMove(Board board) throws NoValidMovesException;
     String getName();
+    void handleInvalidMove(IllegalMoveException exception);
 }

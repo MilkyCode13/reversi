@@ -1,5 +1,6 @@
 package milkycode.reversi.game;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,7 +21,7 @@ public class Game {
             lightPlayer = firstPlayer;
         }
 
-        moveHistory.add(currentBoard);
+        moveHistory.add(currentBoard.copy());
     }
 
     public Board getBoard() {
@@ -31,14 +32,18 @@ public class Game {
         Player currentPlayer = currentBoard.getNextPlayer() == PlayerColor.DARK ? darkPlayer : lightPlayer;
 
         Board newBoard;
-        try {
-            BoardCoordinates moveCoordinates = currentPlayer.makeMove(currentBoard);
-            newBoard = currentBoard.makeMove(moveCoordinates);
-        } catch (IllegalMoveException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                Move move = currentPlayer.getMove(currentBoard);
+                currentBoard.makeMove(move);
+                break;
+            } catch (IllegalMoveException e) {
+                currentPlayer.handleInvalidMove(e);
+            } catch (NoValidMovesException e) {
+                throw new IllegalStateException(e);
+            }
+        } while (true);
 
-        currentBoard = newBoard;
-        moveHistory.add(currentBoard);
+        moveHistory.add(currentBoard.copy());
     }
 }

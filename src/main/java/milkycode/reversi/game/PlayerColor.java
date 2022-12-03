@@ -1,10 +1,20 @@
 package milkycode.reversi.game;
 
 public enum PlayerColor {
-    DARK,
-    LIGHT;
+    DARK(Square.DARK),
+    LIGHT(Square.LIGHT);
 
-    public static PlayerColor getOther(PlayerColor color) {
-        return color == DARK ? LIGHT : DARK;
+    private final Square square;
+
+    PlayerColor(Square square) {
+        this.square = square;
+    }
+
+    public PlayerColor getOther() {
+        return this == DARK ? LIGHT : DARK;
+    }
+
+    public Square getSquare() {
+        return square;
     }
 }

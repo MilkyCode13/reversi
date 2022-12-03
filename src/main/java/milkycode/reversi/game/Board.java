@@ -2,11 +2,13 @@ package milkycode.reversi.game;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Board {
     private final Square[][] squares;
-    private final PlayerColor nextPlayer;
+    private PlayerColor nextPlayer;
+    private List<Move> availableMoves;
 
     public Board() {
         squares = new Square[8][8];
@@ -14,12 +16,20 @@ public class Board {
             Arrays.fill(row, Square.EMPTY);
         }
 
+        squares[3][3] = Square.LIGHT;
+        squares[3][4] = Square.DARK;
+        squares[4][3] = Square.DARK;
+        squares[4][4] = Square.LIGHT;
+
         nextPlayer = PlayerColor.DARK;
+
+        availableMoves = calculateAvailableMoves();
     }
 
-    private Board(Square[][] squares, PlayerColor nextPlayer) {
+    private Board(Square[][] squares, PlayerColor nextPlayer, List<Move> availableMoves) {
         this.squares = Arrays.stream(squares).map(Square[]::clone).toArray(Square[][]::new);
         this.nextPlayer = nextPlayer;
+        this.availableMoves = new ArrayList<>(availableMoves);
     }
 
     public Square[][] getSquares() {
@@ -38,59 +48,84 @@ public class Board {
         return nextPlayer;
     }
 
-    public Board makeMove(BoardCoordinates coordinates) throws IllegalMoveException {
-        if (squares[coordinates.row()][coordinates.column()] != Square.EMPTY) {
-            throw new IllegalMoveException("Cannot move to occupied square");
+    public Board copy() {
+        return new Board(squares, nextPlayer, availableMoves);
+    }
+
+    public void makeMove(Move move) throws IllegalMoveException {
+        Square playerSquare = nextPlayer.getSquare();
+        setSquare(move.coordinates(), playerSquare);
+        for (BoardCoordinates coordinates : move.enclosedCoordinates()) {
+            setSquare(coordinates, playerSquare);
         }
 
-        PlayerColor currentPlayer = this.nextPlayer;
-        PlayerColor nextPlayer = PlayerColor.getOther(currentPlayer);
+        nextPlayer = nextPlayer.getOther();
+        availableMoves = calculateAvailableMoves();
+    }
 
-        Board newBoard = new Board(squares, nextPlayer);
+    public List<Move> calculateAvailableMoves() {
+        List<Move> availableMoves = new ArrayList<>();
 
-        boolean foundAny = false;
-        for (Direction direction : Direction.values()) {
-            if (makeMoveDirection(nextPlayer, coordinates, newBoard, direction)) {
-                foundAny = true;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                BoardCoordinates coordinates = new BoardCoordinates(i, j);
+
+                try {
+                    availableMoves.add(calculateMove(coordinates));
+                } catch (IllegalMoveException e) {
+                    // Skip illegal moves
+                }
             }
         }
 
-        if (!foundAny) {
+        return availableMoves;
+    }
+
+    public Move calculateMove(BoardCoordinates moveCoordinates) throws IllegalMoveException {
+        if (getSquare(moveCoordinates) != Square.EMPTY) {
+            throw new IllegalMoveException("Cannot move to occupied square");
+        }
+
+        List<BoardCoordinates> enclosedSquares = getEnclosedSquares(moveCoordinates);
+
+        if (enclosedSquares.isEmpty()) {
             throw new IllegalMoveException("No valid enclosures found");
         }
 
-        Square playerSquare = Square.getSquare(currentPlayer);
-        newBoard.setSquare(coordinates, playerSquare);
-
-        return newBoard;
+        return new Move(moveCoordinates, enclosedSquares);
     }
 
-    private static boolean makeMoveDirection(PlayerColor currentPlayer, BoardCoordinates coordinates, Board newBoard, Direction direction) {
-        PlayerColor nextPlayer = PlayerColor.getOther(currentPlayer);
-
-        Square playerSquare = Square.getSquare(currentPlayer);
-        Square otherSquare = Square.getSquare(nextPlayer);
-
-        BoardCoordinates newCoordinates = coordinates;
+    public List<BoardCoordinates> getEnclosedSquares(BoardCoordinates moveCoordinates) {
         List<BoardCoordinates> enclosedCoordinates = new ArrayList<>();
+        for (Direction direction : Direction.values()) {
+            enclosedCoordinates.addAll(getEnclosedSquaresByDirection(moveCoordinates, direction));
+        }
+        return enclosedCoordinates;
+    }
+
+    private List<BoardCoordinates> getEnclosedSquaresByDirection(BoardCoordinates moveCoordinates, Direction direction) {
+        List<BoardCoordinates> enclosedCoordinates = new ArrayList<>();
+        PlayerColor otherPlayer = nextPlayer.getOther();
+        Square otherSquare = otherPlayer.getSquare();
 
         try {
-            do {
-                newCoordinates = direction.apply(newCoordinates);
-                enclosedCoordinates.add(newCoordinates);
-            } while (newBoard.getSquare(newCoordinates) == otherSquare);
+            BoardCoordinates coordinates = direction.apply(moveCoordinates);
+            while (getSquare(coordinates) == otherSquare) {
+                enclosedCoordinates.add(coordinates);
+                coordinates = direction.apply(coordinates);
+            }
+
+            if (getSquare(coordinates) != nextPlayer.getSquare()) {
+                return Collections.emptyList();
+            }
         } catch (IllegalArgumentException exception) {
-            return false;
+            return Collections.emptyList();
         }
 
-        if (newBoard.getSquare(newCoordinates) != playerSquare) {
-            return false;
-        }
+        return enclosedCoordinates;
+    }
 
-        newBoard.setSquare(coordinates, playerSquare);
-        for (BoardCoordinates squareCoordinates : enclosedCoordinates) {
-            newBoard.setSquare(squareCoordinates, playerSquare);
-        }
-        return true;
+    public List<Move> getAvailableMoves() {
+        return availableMoves;
     }
 }

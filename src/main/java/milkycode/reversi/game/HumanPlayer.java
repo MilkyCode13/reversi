@@ -1,22 +1,33 @@
 package milkycode.reversi.game;
 
-import milkycode.reversi.io.GameIo;
+import milkycode.reversi.io.ConsoleIo;
 
 public class HumanPlayer implements Player {
     private final String name;
-    private final GameIo io;
+    private final ConsoleIo io;
 
-    public HumanPlayer(String name, GameIo io) {
+    public HumanPlayer(String name, ConsoleIo io) {
         this.name = name;
         this.io = io;
     }
 
     @Override
-    public BoardCoordinates makeMove(Board board) {
+    public Move getMove(Board board) {
+        io.displayBoard(board);
+        BoardCoordinates moveCoordinates = io.getMove(this);
+        // return board.getAvailableMoves().stream().filter(move -> move.coordinates().equals(moveCoordinates)).findFirst();
+
+        // TODO: Fix this!
+        return null;
     }
 
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void handleInvalidMove(IllegalMoveException exception) {
+        io.printInvalidMove(exception.getMessage());
     }
 }
