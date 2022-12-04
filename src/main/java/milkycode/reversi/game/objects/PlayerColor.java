@@ -11,10 +11,16 @@ public enum PlayerColor {
         this.square = square;
     }
 
+    /**
+     * @return Opposite color.
+     */
     public PlayerColor getOther() {
         return this == DARK ? LIGHT : DARK;
     }
 
+    /**
+     * @return Respective square type.
+     */
     public Square getSquare() {
         return square;
     }

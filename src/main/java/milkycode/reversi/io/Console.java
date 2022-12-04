@@ -23,6 +23,9 @@ public class Console {
         System.out.println();
     }
 
+    /**
+     * @return The menu entry chosen by the user.
+     */
     public MenuEntry getMenuEntry() {
         System.out.println("Select menu item:");
         for (MenuEntry entry : MenuEntry.values()) {
@@ -48,6 +51,9 @@ public class Console {
         }
     }
 
+    /**
+     * @param board The board to display.
+     */
     public void displayBoard(Board board) {
         List<Move> moves = board.getAvailableMoves();
         System.out.print("Available moves: ");
@@ -78,6 +84,11 @@ public class Console {
         printColumnNames();
     }
 
+    /**
+     * @param player The player.
+     * @param color  The color of the player.
+     * @return The move coordinates or empty if cancelling was chosen.
+     */
     public Optional<BoardCoordinates> getMove(Player player, PlayerColor color) {
         do {
             System.out.print(player.name() + " (" + color + "), enter move ('cancel' to cancel move)> ");
@@ -100,6 +111,9 @@ public class Console {
         } while (true);
     }
 
+    /**
+     * @param game The game which results to show.
+     */
     public void displayGameResults(Game game) {
         GameScore score = game.getScore();
         PlayerColor winnerColor = score.darkScore() > score.lightScore() ? PlayerColor.DARK : PlayerColor.LIGHT;
@@ -107,6 +121,9 @@ public class Console {
         System.out.println(game.getPlayerByColor(winnerColor).name() + " have won! Score is " + score.darkScore() + " : " + score.lightScore());
     }
 
+    /**
+     * @param score The best score to display.
+     */
     public void displayBestHumanScore(int score) {
         System.out.println("The best score is " + score);
     }

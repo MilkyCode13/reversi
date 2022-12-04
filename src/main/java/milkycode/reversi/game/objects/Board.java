@@ -30,12 +30,20 @@ public class Board {
         gameFinished = false;
     }
 
+    /**
+     * @param squares        The matrix.
+     * @param nextPlayer     The next player.
+     * @param availableMoves List of available moves.
+     */
     private Board(Square[][] squares, PlayerColor nextPlayer, List<Move> availableMoves) {
         this.squares = Arrays.stream(squares).map(Square[]::clone).toArray(Square[][]::new);
         this.nextPlayer = nextPlayer;
         this.availableMoves = new ArrayList<>(availableMoves);
     }
 
+    /**
+     * @return Matrix of squares with available moves marked.
+     */
     public Square[][] getSquaresWithAvailableMoves() {
         Square[][] result = Arrays.stream(squares).map(Square[]::clone).toArray(Square[][]::new);
 
@@ -47,6 +55,10 @@ public class Board {
         return result;
     }
 
+    /**
+     * @param coordinates Coordinates of a square.
+     * @return The square.
+     */
     public Square getSquare(BoardCoordinates coordinates) {
         return squares[coordinates.row()][coordinates.column()];
     }
@@ -55,18 +67,30 @@ public class Board {
         squares[coordinates.row()][coordinates.column()] = value;
     }
 
+    /**
+     * @return The next player.
+     */
     public PlayerColor getNextPlayer() {
         return nextPlayer;
     }
 
+    /**
+     * @return List of available moves.
+     */
     public List<Move> getAvailableMoves() {
         return availableMoves;
     }
 
+    /**
+     * @return Whether the game has been finished.
+     */
     public boolean isGameFinished() {
         return gameFinished;
     }
 
+    /**
+     * @return The score of the game.
+     */
     public GameScore getScore() {
         int darkScore = 0;
         int lightScore = 0;
@@ -84,10 +108,16 @@ public class Board {
         return new GameScore(darkScore, lightScore);
     }
 
+    /**
+     * @return A copy of the board.
+     */
     public Board copy() {
         return new Board(squares, nextPlayer, availableMoves);
     }
 
+    /**
+     * @param move A move to make
+     */
     public void makeMove(Move move) {
         if (gameFinished) {
             throw new IllegalStateException("Cannot make a move if game has been finished");
@@ -107,6 +137,11 @@ public class Board {
         }
     }
 
+    /**
+     * @param coordinates Coordinates of a square.
+     * @return The move.
+     * @throws IllegalMoveException The move is not valid.
+     */
     public Move getMove(BoardCoordinates coordinates) throws IllegalMoveException {
         return availableMoves.stream()
                 .filter(move -> move.coordinates().equals(coordinates))
@@ -131,7 +166,7 @@ public class Board {
         }
     }
 
-    public List<Move> calculateAvailableMoves() {
+    private List<Move> calculateAvailableMoves() {
         List<Move> availableMoves = new ArrayList<>();
 
         for (int i = 0; i < 8; i++) {
@@ -149,7 +184,7 @@ public class Board {
         return availableMoves;
     }
 
-    public Move calculateMove(BoardCoordinates moveCoordinates) throws IllegalMoveException {
+    private Move calculateMove(BoardCoordinates moveCoordinates) throws IllegalMoveException {
         if (getSquare(moveCoordinates) != Square.EMPTY) {
             throw new IllegalMoveException("Cannot move to occupied square");
         }
@@ -163,7 +198,7 @@ public class Board {
         return new Move(moveCoordinates, enclosedSquares);
     }
 
-    public List<BoardCoordinates> getEnclosedSquares(BoardCoordinates moveCoordinates) {
+    private List<BoardCoordinates> getEnclosedSquares(BoardCoordinates moveCoordinates) {
         List<BoardCoordinates> enclosedCoordinates = new ArrayList<>();
         for (Direction direction : Direction.values()) {
             enclosedCoordinates.addAll(getEnclosedSquaresByDirection(moveCoordinates, direction));

@@ -15,7 +15,11 @@ public abstract class Game {
     private Board board = new Board();
     private boolean started = false;
 
-    public Game(Player firstPlayer, Player secondPlayer) {
+    /**
+     * @param firstPlayer  First player.
+     * @param secondPlayer Second player.
+     */
+    protected Game(Player firstPlayer, Player secondPlayer) {
         Random random = new Random();
         if (random.nextBoolean()) {
             this.darkPlayer = firstPlayer;
@@ -26,10 +30,16 @@ public abstract class Game {
         }
     }
 
+    /**
+     * @return A copy of the current board.
+     */
     public Board getBoard() {
         return board.copy();
     }
 
+    /**
+     * @return Whether the game has been finished.
+     */
     public boolean isFinished() {
         return board.isGameFinished();
     }
@@ -40,6 +50,9 @@ public abstract class Game {
         moveHistory.addLast(board.copy());
     }
 
+    /**
+     * @param move The move to make.
+     */
     protected void makeMove(Move move) {
         board.makeMove(move);
     }
@@ -57,6 +70,10 @@ public abstract class Game {
         board = moveHistory.getLast().copy();
     }
 
+    /**
+     * @param moveCoordinates Coordinates of the move.
+     * @throws IllegalMoveException The move is not valid.
+     */
     public void makePlayerMove(BoardCoordinates moveCoordinates) throws IllegalMoveException {
         if (!started) {
             throw new IllegalStateException("Cannot continue the game if game hasn't been started");
@@ -80,6 +97,10 @@ public abstract class Game {
 
     protected abstract void runToPlayerMove();
 
+    /**
+     * @param color The color of the player.
+     * @return The player.
+     */
     public Player getPlayerByColor(PlayerColor color) {
         if (color == PlayerColor.DARK) {
             return darkPlayer;
@@ -92,10 +113,16 @@ public abstract class Game {
         throw new IllegalArgumentException("Cannot get a player of a none color");
     }
 
+    /**
+     * @return The color of the current player.
+     */
     public PlayerColor getCurrentPlayerColor() {
         return board.getNextPlayer();
     }
 
+    /**
+     * @return The current player.
+     */
     public Player getCurrentPlayer() {
         if (!started) {
             throw new IllegalStateException("Cannot continue the game if game hasn't been started");
@@ -108,6 +135,9 @@ public abstract class Game {
         return getCurrentPlayerColor() == PlayerColor.DARK ? darkPlayer : lightPlayer;
     }
 
+    /**
+     * @return The score.
+     */
     public GameScore getScore() {
         return board.getScore();
     }

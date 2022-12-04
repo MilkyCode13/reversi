@@ -13,6 +13,9 @@ public enum MenuEntry {
         this.description = description;
     }
 
+    /**
+     * @return The description of the menu entry.
+     */
     public String getDescription() {
         return description;
     }

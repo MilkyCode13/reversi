@@ -14,11 +14,19 @@ public enum Direction {
     private final int columnsDelta;
 
 
+    /**
+     * @param rowsDelta    Change in the vertical coordinate.
+     * @param columnsDelta Change in the horizontal coordinate.
+     */
     Direction(int rowsDelta, int columnsDelta) {
         this.rowsDelta = rowsDelta;
         this.columnsDelta = columnsDelta;
     }
 
+    /**
+     * @param coordinates Start coordinates.
+     * @return New coordinates after application of the direction.
+     */
     public BoardCoordinates apply(BoardCoordinates coordinates) {
         return new BoardCoordinates(coordinates.row() + rowsDelta, coordinates.column() + columnsDelta);
     }

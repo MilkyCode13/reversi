@@ -7,6 +7,9 @@ import milkycode.reversi.game.objects.Player;
 public class SinglePlayerGame extends Game {
     private final Computer computer;
 
+    /**
+     * @param computer The computer to compete with the player.
+     */
     public SinglePlayerGame(Computer computer) {
         super(new Player("Player", false), new Player("Computer", true));
         this.computer = computer;

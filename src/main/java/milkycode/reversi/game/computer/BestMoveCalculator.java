@@ -8,11 +8,16 @@ import milkycode.reversi.game.objects.Move;
 import java.util.List;
 
 public class BestMoveCalculator {
+    /**
+     * @param board Board to get the best move on.
+     * @param depth The depth of move calculations.
+     * @return The best move.
+     */
     public static BestMove getBestMove(Board board, int depth) {
         Move bestMove = null;
         double bestMoveScore = Double.NEGATIVE_INFINITY;
 
-        for (Move move : board.calculateAvailableMoves()) {
+        for (Move move : board.getAvailableMoves()) {
             double moveScore = getMoveScore(board, move, depth);
 
             if (moveScore > bestMoveScore) {
