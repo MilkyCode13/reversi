@@ -1,4 +1,4 @@
-package milkycode.reversi.game;
+package milkycode.reversi.game.objects;
 
 public enum Direction {
     NORTH(-1, 0),

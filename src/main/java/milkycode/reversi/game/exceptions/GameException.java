@@ -1,4 +1,4 @@
-package milkycode.reversi.game;
+package milkycode.reversi.game.exceptions;
 
 public class GameException extends Exception {
     public GameException(String message) {

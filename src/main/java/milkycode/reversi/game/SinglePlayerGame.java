@@ -1,27 +1,30 @@
 package milkycode.reversi.game;
 
-import java.util.Random;
+import milkycode.reversi.game.computer.Computer;
+import milkycode.reversi.game.objects.Move;
+import milkycode.reversi.game.objects.Player;
 
 public class SinglePlayerGame extends Game {
     private final Computer computer;
-    PlayerColor computerColor;
 
     public SinglePlayerGame(Computer computer) {
+        super(new Player("Player", false), new Player("Computer", true));
         this.computer = computer;
-
-        Random random = new Random();
-        computerColor = random.nextBoolean() ? PlayerColor.DARK : PlayerColor.LIGHT;
     }
 
     @Override
     protected void runToPlayerMove() {
-        if (getBoard().isGameFinished()) {
+        if (isFinished()) {
             throw new IllegalStateException("Cannot continue the game if it has been finished");
         }
 
-        while (getBoard().getNextPlayer() == computerColor) {
+        while (isCurrentPlayerComputer()) {
             Move move = computer.getMove(getBoard());
             makeMove(move);
         }
+    }
+
+    private boolean isCurrentPlayerComputer() {
+        return !isFinished() && getCurrentPlayer().isComputer();
     }
 }

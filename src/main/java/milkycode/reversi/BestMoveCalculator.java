@@ -1,9 +1,9 @@
 package milkycode.reversi;
 
-import milkycode.reversi.game.BestMove;
-import milkycode.reversi.game.Board;
-import milkycode.reversi.game.BoardCoordinates;
-import milkycode.reversi.game.Move;
+import milkycode.reversi.game.objects.BestMove;
+import milkycode.reversi.game.objects.Board;
+import milkycode.reversi.game.objects.BoardCoordinates;
+import milkycode.reversi.game.objects.Move;
 
 import java.util.List;
 
@@ -51,6 +51,7 @@ public class BestMoveCalculator {
         }
 
         if (depth > 0) {
+            board = board.copy();
             board.makeMove(move);
             score -= getBestMove(board, depth - 1).score();
         }

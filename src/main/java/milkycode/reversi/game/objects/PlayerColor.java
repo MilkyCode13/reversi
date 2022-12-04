@@ -1,4 +1,4 @@
-package milkycode.reversi.game;
+package milkycode.reversi.game.objects;
 
 public enum PlayerColor {
     NONE(Square.EMPTY),

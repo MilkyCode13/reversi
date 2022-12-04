@@ -1,4 +1,6 @@
-package milkycode.reversi.game;
+package milkycode.reversi.game.objects;
+
+import milkycode.reversi.game.exceptions.IllegalMoveException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +36,15 @@ public class Board {
         this.availableMoves = new ArrayList<>(availableMoves);
     }
 
-    public Square[][] getSquares() {
-        return squares;
+    public Square[][] getSquaresWithAvailableMoves() {
+        Square[][] result = Arrays.stream(squares).map(Square[]::clone).toArray(Square[][]::new);
+
+        for (Move move : availableMoves) {
+            BoardCoordinates moveCoordinates = move.coordinates();
+            result[moveCoordinates.row()][moveCoordinates.column()] = Square.AVAILABLE_MOVE;
+        }
+
+        return result;
     }
 
     public Square getSquare(BoardCoordinates coordinates) {
@@ -56,6 +65,23 @@ public class Board {
 
     public boolean isGameFinished() {
         return gameFinished;
+    }
+
+    public GameScore getScore() {
+        int darkScore = 0;
+        int lightScore = 0;
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (squares[i][j] == Square.DARK) {
+                    darkScore++;
+                } else if (squares[i][j] == Square.LIGHT) {
+                    lightScore++;
+                }
+            }
+        }
+
+        return new GameScore(darkScore, lightScore);
     }
 
     public Board copy() {

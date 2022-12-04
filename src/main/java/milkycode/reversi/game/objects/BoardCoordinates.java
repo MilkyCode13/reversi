@@ -1,4 +1,4 @@
-package milkycode.reversi.game;
+package milkycode.reversi.game.objects;
 
 public record BoardCoordinates(int row, int column) {
     public BoardCoordinates {
@@ -13,5 +13,10 @@ public record BoardCoordinates(int row, int column) {
 
     public boolean isEdge() {
         return (row == 0 || row == 7) || (column == 0 || column == 7);
+    }
+
+    @Override
+    public String toString() {
+        return Character.toString(column + 'a') + (row + 1);
     }
 }
