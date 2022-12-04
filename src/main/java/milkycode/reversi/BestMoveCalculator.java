@@ -1,15 +1,19 @@
-package milkycode.reversi.game;
+package milkycode.reversi;
+
+import milkycode.reversi.game.BestMove;
+import milkycode.reversi.game.Board;
+import milkycode.reversi.game.BoardCoordinates;
+import milkycode.reversi.game.Move;
 
 import java.util.List;
 
-public class ComputerPlayer implements Player {
-    @Override
-    public Move getMove(Board board) throws NoValidMovesException {
+public class BestMoveCalculator {
+    public static BestMove getBestMove(Board board, int depth) {
         Move bestMove = null;
         double bestMoveScore = Double.NEGATIVE_INFINITY;
 
         for (Move move : board.calculateAvailableMoves()) {
-            double moveScore = getMoveScore(board, move);
+            double moveScore = getMoveScore(board, move, depth);
 
             if (moveScore > bestMoveScore) {
                 bestMove = move;
@@ -18,13 +22,13 @@ public class ComputerPlayer implements Player {
         }
 
         if (bestMove == null) {
-            throw new NoValidMovesException();
+            return new BestMove(null, 0);
         }
 
-        return bestMove;
+        return new BestMove(bestMove, bestMoveScore);
     }
 
-    private double getMoveScore(Board board, Move move) {
+    private static double getMoveScore(Board board, Move move, int depth) {
         double score = 0;
 
         List<BoardCoordinates> enclosedSquares = move.enclosedCoordinates();
@@ -46,16 +50,11 @@ public class ComputerPlayer implements Player {
             return score + 0.4;
         }
 
+        if (depth > 0) {
+            board.makeMove(move);
+            score -= getBestMove(board, depth - 1).score();
+        }
+
         return score;
-    }
-
-    @Override
-    public String getName() {
-        return "Beep Boop";
-    }
-
-    @Override
-    public void handleInvalidMove(IllegalMoveException exception) {
-        throw new UnsupportedOperationException("Something bad happened");
     }
 }

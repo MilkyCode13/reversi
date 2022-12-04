@@ -6,7 +6,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ConsoleIo {
+public class Console {
     private final Scanner in = new Scanner(System.in);
     private final Pattern movePattern = Pattern.compile("^\\s*([a-hA-H][1-8])\\s*$");
 
@@ -42,10 +42,10 @@ public class ConsoleIo {
         System.out.println();
     }
 
-    public BoardCoordinates getMove(Player player) {
+    public BoardCoordinates getMove(PlayerColor color) {
         Matcher matcher;
         do {
-            System.out.print(player.getName());
+            System.out.print(color.name());
             System.out.print("> ");
 
             String input = in.nextLine();
@@ -61,9 +61,5 @@ public class ConsoleIo {
         String coordinates = matcher.group(1);
 
         return new BoardCoordinates(coordinates.charAt(1) - '1', Character.toLowerCase(coordinates.charAt(0)) - 'a');
-    }
-
-    public void printInvalidMove(String message) {
-        System.out.println("Invalid move: " + message);
     }
 }

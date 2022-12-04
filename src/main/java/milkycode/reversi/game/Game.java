@@ -1,26 +1,14 @@
 package milkycode.reversi.game;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class Game {
-    private final Player darkPlayer;
-    private final Player lightPlayer;
+public abstract class Game {
     private final List<Board> moveHistory = new ArrayList<>();
     private Board currentBoard = new Board();
+    private boolean started = false;
 
-    public Game(Player firstPlayer, Player secondPlayer) {
-        Random random = new Random();
-        if (random.nextBoolean()) {
-            darkPlayer = firstPlayer;
-            lightPlayer = secondPlayer;
-        } else {
-            darkPlayer = secondPlayer;
-            lightPlayer = firstPlayer;
-        }
-
+    public Game() {
         moveHistory.add(currentBoard.copy());
     }
 
@@ -28,22 +16,38 @@ public class Game {
         return currentBoard;
     }
 
-    public void move() {
-        Player currentPlayer = currentBoard.getNextPlayer() == PlayerColor.DARK ? darkPlayer : lightPlayer;
+    public boolean isFinished() {
+        return getBoard().isGameFinished();
+    }
 
-        Board newBoard;
-        do {
-            try {
-                Move move = currentPlayer.getMove(currentBoard);
-                currentBoard.makeMove(move);
-                break;
-            } catch (IllegalMoveException e) {
-                currentPlayer.handleInvalidMove(e);
-            } catch (NoValidMovesException e) {
-                throw new IllegalStateException(e);
-            }
-        } while (true);
+    public void run() {
+        started = true;
+        runToPlayerMove();
+    }
 
+    protected void makeMove(Move move) {
+        currentBoard.makeMove(move);
         moveHistory.add(currentBoard.copy());
+    }
+
+    public void cancelMove() {
+        if (moveHistory.size() <= 1) {
+            throw new IllegalStateException("Cannot cancel the move if no moved were made");
+        }
+    }
+
+    public void makePlayerMove(BoardCoordinates moveCoordinates) throws IllegalMoveException {
+        if (getBoard().isGameFinished()) {
+            throw new IllegalStateException("Cannot continue the game if it has been finished");
+        }
+
+        Move move = currentBoard.getMove(moveCoordinates);
+        currentBoard.makeMove(move);
+
+        runToPlayerMove();
+    }
+
+    protected void runToPlayerMove() {
+
     }
 }

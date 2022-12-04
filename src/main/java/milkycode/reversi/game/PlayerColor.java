@@ -1,6 +1,7 @@
 package milkycode.reversi.game;
 
 public enum PlayerColor {
+    NONE(Square.EMPTY),
     DARK(Square.DARK),
     LIGHT(Square.LIGHT);
 

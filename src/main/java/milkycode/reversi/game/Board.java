@@ -10,6 +10,8 @@ public class Board {
     private PlayerColor nextPlayer;
     private List<Move> availableMoves;
 
+    private boolean gameFinished;
+
     public Board() {
         squares = new Square[8][8];
         for (Square[] row : squares) {
@@ -22,8 +24,8 @@ public class Board {
         squares[4][4] = Square.LIGHT;
 
         nextPlayer = PlayerColor.DARK;
-
         availableMoves = calculateAvailableMoves();
+        gameFinished = false;
     }
 
     private Board(Square[][] squares, PlayerColor nextPlayer, List<Move> availableMoves) {
@@ -48,11 +50,23 @@ public class Board {
         return nextPlayer;
     }
 
+    public List<Move> getAvailableMoves() {
+        return availableMoves;
+    }
+
+    public boolean isGameFinished() {
+        return gameFinished;
+    }
+
     public Board copy() {
         return new Board(squares, nextPlayer, availableMoves);
     }
 
-    public void makeMove(Move move) throws IllegalMoveException {
+    public void makeMove(Move move) {
+        if (gameFinished) {
+            throw new IllegalStateException("Cannot make a move if game has been finished");
+        }
+
         Square playerSquare = nextPlayer.getSquare();
         setSquare(move.coordinates(), playerSquare);
         for (BoardCoordinates coordinates : move.enclosedCoordinates()) {
@@ -61,6 +75,34 @@ public class Board {
 
         nextPlayer = nextPlayer.getOther();
         availableMoves = calculateAvailableMoves();
+
+        if (availableMoves.isEmpty()) {
+            skipMove();
+        }
+    }
+
+    public Move getMove(BoardCoordinates coordinates) throws IllegalMoveException {
+        return availableMoves.stream()
+                .filter(move -> move.coordinates().equals(coordinates))
+                .findAny().orElseThrow(IllegalMoveException::new);
+    }
+
+    private void skipMove() {
+        if (gameFinished) {
+            throw new IllegalStateException("Cannot skip a move if game has been finished");
+        }
+
+        if (!availableMoves.isEmpty()) {
+            throw new IllegalStateException("Cannot skip a move if able to make a move");
+        }
+
+        nextPlayer = nextPlayer.getOther();
+        availableMoves = calculateAvailableMoves();
+
+        if (availableMoves.isEmpty()) {
+            nextPlayer = PlayerColor.NONE;
+            gameFinished = true;
+        }
     }
 
     public List<Move> calculateAvailableMoves() {
@@ -123,9 +165,5 @@ public class Board {
         }
 
         return enclosedCoordinates;
-    }
-
-    public List<Move> getAvailableMoves() {
-        return availableMoves;
     }
 }

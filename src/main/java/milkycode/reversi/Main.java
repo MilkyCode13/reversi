@@ -1,20 +1,22 @@
 package milkycode.reversi;
 
-import milkycode.reversi.game.ComputerPlayer;
-import milkycode.reversi.game.Game;
-import milkycode.reversi.game.HumanPlayer;
-import milkycode.reversi.game.Player;
-import milkycode.reversi.io.ConsoleIo;
+import milkycode.reversi.game.*;
+import milkycode.reversi.io.Console;
 
 public class Main {
     public static void main(String[] args) {
-        ConsoleIo io = new ConsoleIo();
-        Player first = new HumanPlayer("Player1", io);
-        Player second = new ComputerPlayer();
-        Game game = new Game(first, second);
+        Console console = new Console();
+        Game game = new SinglePlayerGame(new EasyComputer());
+        game.run();
 
-        while (true) {
-            game.move();
+        while (!game.isFinished()) {
+            console.displayBoard(game.getBoard());
+            BoardCoordinates coordinates = console.getMove(game.getBoard().getNextPlayer());
+            try {
+                game.makePlayerMove(coordinates);
+            } catch (IllegalMoveException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 }
