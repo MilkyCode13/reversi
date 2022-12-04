@@ -1,6 +1,5 @@
 package milkycode.reversi.game.computer;
 
-import milkycode.reversi.BestMoveCalculator;
 import milkycode.reversi.game.objects.Board;
 import milkycode.reversi.game.objects.Move;
 

@@ -106,4 +106,8 @@ public class Console {
 
         System.out.println(game.getPlayerByColor(winnerColor).name() + " have won! Score is " + score.darkScore() + " : " + score.lightScore());
     }
+
+    public void displayBestHumanScore(int score) {
+        System.out.println("The best score is " + score);
+    }
 }

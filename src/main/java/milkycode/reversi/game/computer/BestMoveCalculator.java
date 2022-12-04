@@ -1,4 +1,4 @@
-package milkycode.reversi;
+package milkycode.reversi.game.computer;
 
 import milkycode.reversi.game.objects.BestMove;
 import milkycode.reversi.game.objects.Board;
